@@ -302,7 +302,7 @@
     <div id="flowers"></div>
     <div id="wrap">
       <div id="box">
-        <div id="date">23 de Abril, 2026</div>
+        <div id="date">23 de Abril, 2025</div>
         <div id="text"><span id="cur"></span></div>
       </div>
     </div>
@@ -316,9 +316,16 @@
     /* ===================== CONFIGURACION ===================== */
     const LETTER = `Altos y bajos marcan los días, la temperatura sube y cae con prisa, y aun así este tiempo hermoso parece infinito, las palabras no alcanzan a contener lo que siento, pero las tuyas siempre llegan con una claridad dulce y necesaria, no sé en qué momento llegamos aquí ni hacia dónde nos llevará el futuro, solo sé que mis ojos fueron afortunados al encontrarte y que esta historia merece ser vivida sin miedo, incluso cuando dudo de mí, incluso cuando me pierdo, tu paciencia se vuelve refugio y dirección, intento mejorar, avanzar, sostener este ritmo que juntos creamos, mis recuerdos se agitan como una melodía que encuentra en ti su armonía perfecta, tú traes luz, traes calma, traes ese calor que mi piel reconoce y extraña cuando no estás, y en medio de todo comprendo que esto no es casualidad ni ilusión, es una fuerza real que nos empuja a elegirnos cada día, a construir con intención y ternura, a imaginar un mañana donde cada decisión nos acerque más, donde una casa se llene de risas pequeñas y silencios compartidos, porque amarte no es solo sentir, es entender que en ti encontré hogar, paz, destino y una razón profunda para creer que lo más bonito de mi vida no es un recuerdo sino todo lo que aún nos queda por vivir juntos mi Dani, como si nuestras historias hubieran estado esperando este instante para finalmente encontrarse y comenzar a escribirse juntas TE AMO DANIELA BEATRIZ ROSALES MAFALADO 💙`;
 
-    const CHAR_MS = 94;   // ms por caracter
+    const CHAR_MS = 94;
     const VID_ID = 'awuicQi36J4';
     const GOLDEN = 137.508 * Math.PI / 180;
+
+    const START_DATE = new Date(2025, 3, 23);
+    const END_DATE = new Date(2026, 3, 23);
+    const MONTHS_ES = [
+      'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+      'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+    ];
 
     /* ===================== ESTRELLAS ===================== */
     (function () {
@@ -335,30 +342,28 @@
     /* ===================== SVG GIRASOL ===================== */
     function sunflowerSVG(type) {
       const blue = type === 'blue';
-      // Colores
-      const P1 = blue ? '#3949ab' : '#fdd835';   // petal principal
-      const P2 = blue ? '#1a237e' : '#f9a825';   // petal sombra
-      const P3 = blue ? '#5c6bc0' : '#fff176';   // brillo petal
-      const C1 = blue ? '#0d1b6e' : '#3e2723';   // centro exterior
-      const C2 = blue ? '#060d3a' : '#1b0000';   // centro interior
+      const P1 = blue ? '#3949ab' : '#fdd835';
+      const P2 = blue ? '#1a237e' : '#f9a825';
+      const P3 = blue ? '#5c6bc0' : '#fff176';
+      const C1 = blue ? '#0d1b6e' : '#3e2723';
+      const C2 = blue ? '#060d3a' : '#1b0000';
       const DOT = blue ? 'rgba(160,185,255,.18)' : 'rgba(255,240,120,.15)';
 
       const PETALS = 14;
       let outer = '', inner = '', seeds = '';
 
-      // Pétalos externos — elipses con bordes suaves
       for (let i = 0; i < PETALS; i++) {
         const a = (360 / PETALS) * i;
         outer += `<ellipse rx="7.5" ry="25" fill="${P1}" stroke="${P2}" stroke-width=".6" opacity=".95"
       transform="rotate(${a}) translate(0,-36)"/>`;
       }
-      // Pétalos internos (capa detrás, más cortos)
+
       for (let i = 0; i < PETALS; i++) {
         const a = (360 / PETALS) * i + (360 / PETALS / 2);
         inner += `<ellipse rx="5" ry="17" fill="${P2}" stroke="${P2}" stroke-width=".3" opacity=".7"
       transform="rotate(${a}) translate(0,-28)"/>`;
       }
-      // Patrón espiral dorada para las semillas
+
       for (let i = 0; i < 55; i++) {
         const r = Math.sqrt(i) * 2.4;
         const ang = i * GOLDEN;
@@ -366,7 +371,7 @@
         const y = (r * Math.sin(ang)).toFixed(1);
         if (r < 19) seeds += `<circle cx="${x}" cy="${y}" r="1.1" fill="${DOT}"/>`;
       }
-      // Reflejo
+
       const shine = `<ellipse cx="-7" cy="-9" rx="5" ry="3.5" fill="${blue ? 'rgba(150,170,255,.22)' : 'rgba(255,255,180,.25)'}" transform="rotate(-35)"/>`;
 
       return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-68 -68 136 136" style="width:100%;height:100%">
@@ -404,59 +409,61 @@
       setInterval(spawnFlower, 800);
     }
 
-    /* ===================== MAQUINA DE ESCRIBIR ===================== */
-    function startTyping() {
-  const textEl = document.getElementById('text');
-  const cur = document.getElementById('cur');
-  const box = document.getElementById('box');
-  const dateEl = document.getElementById('date');
-
-  let i = 0;
-
-  const totalDays = Math.round((END_DATE - START_DATE) / (1000 * 60 * 60 * 24));
-
-  function formatDate(d) {
-    return `${d.getDate()} de ${MONTHS_ES[d.getMonth()]}, ${d.getFullYear()}`;
-  }
-
-  function updateDate(progress) {
-    const dayOffset = Math.round(progress * totalDays);
-    const currentDate = new Date(START_DATE);
-    currentDate.setDate(START_DATE.getDate() + dayOffset);
-
-    if (currentDate > END_DATE) {
-      currentDate.setTime(END_DATE.getTime());
+    /* ===================== FECHA DINAMICA ===================== */
+    function formatDate(d) {
+      return `${d.getDate()} de ${MONTHS_ES[d.getMonth()]}, ${d.getFullYear()}`;
     }
 
-    dateEl.textContent = formatDate(currentDate);
-  }
+    function updateDynamicDate(progress) {
+      const dateEl = document.getElementById('date');
+      const totalDays = Math.round((END_DATE - START_DATE) / (1000 * 60 * 60 * 24));
+      const dayOffset = Math.round(progress * totalDays);
 
-  function next() {
-    if (i < LETTER.length) {
-      textEl.insertBefore(document.createTextNode(LETTER[i]), cur);
-      i++;
+      const currentDate = new Date(START_DATE);
+      currentDate.setDate(START_DATE.getDate() + dayOffset);
 
-      const progress = i / LETTER.length;
-      updateDate(progress);
-
-      box.scrollTop = box.scrollHeight;
-
-      if (i === 80) {
-        const h = document.getElementById('hint');
-        h.style.opacity = '1';
-        setTimeout(() => h.style.opacity = '0', 4000);
+      if (currentDate > END_DATE) {
+        currentDate.setTime(END_DATE.getTime());
       }
 
-      setTimeout(next, CHAR_MS);
-    } else {
-      updateDate(1);
-      cur.style.display = 'none';
+      dateEl.textContent = formatDate(currentDate);
     }
-  }
 
-  updateDate(0);
-  setTimeout(next, 1600);
-}
+    /* ===================== MAQUINA DE ESCRIBIR ===================== */
+    function startTyping() {
+      const textEl = document.getElementById('text');
+      const cur = document.getElementById('cur');
+      const box = document.getElementById('box');
+      let i = 0;
+
+      updateDynamicDate(0);
+
+      function next() {
+        if (i < LETTER.length) {
+          textEl.insertBefore(document.createTextNode(LETTER[i]), cur);
+          i++;
+
+          const progress = i / LETTER.length;
+          updateDynamicDate(progress);
+
+          box.scrollTop = box.scrollHeight;
+
+          if (i === 80) {
+            const h = document.getElementById('hint');
+            h.style.opacity = '1';
+            setTimeout(() => h.style.opacity = '0', 4000);
+          }
+
+          setTimeout(next, CHAR_MS);
+        } else {
+          updateDynamicDate(1);
+          cur.style.display = 'none';
+        }
+      }
+
+      setTimeout(next, 1600);
+    }
+
     /* ===================== MUSICA ===================== */
     function startMusic() {
       const audio = document.getElementById('music');
