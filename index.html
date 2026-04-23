@@ -316,7 +316,7 @@
     /* ===================== CONFIGURACION ===================== */
     const LETTER = `Altos y bajos marcan los días, la temperatura sube y cae con prisa, y aun así este tiempo hermoso parece infinito, las palabras no alcanzan a contener lo que siento, pero las tuyas siempre llegan con una claridad dulce y necesaria, no sé en qué momento llegamos aquí ni hacia dónde nos llevará el futuro, solo sé que mis ojos fueron afortunados al encontrarte y que esta historia merece ser vivida sin miedo, incluso cuando dudo de mí, incluso cuando me pierdo, tu paciencia se vuelve refugio y dirección, intento mejorar, avanzar, sostener este ritmo que juntos creamos, mis recuerdos se agitan como una melodía que encuentra en ti su armonía perfecta, tú traes luz, traes calma, traes ese calor que mi piel reconoce y extraña cuando no estás, y en medio de todo comprendo que esto no es casualidad ni ilusión, es una fuerza real que nos empuja a elegirnos cada día, a construir con intención y ternura, a imaginar un mañana donde cada decisión nos acerque más, donde una casa se llene de risas pequeñas y silencios compartidos, porque amarte no es solo sentir, es entender que en ti encontré hogar, paz, destino y una razón profunda para creer que lo más bonito de mi vida no es un recuerdo sino todo lo que aún nos queda por vivir juntos mi Dani, como si nuestras historias hubieran estado esperando este instante para finalmente encontrarse y comenzar a escribirse juntas TE AMO DANIELA BEATRIZ ROSALES MAFALADO 💙`;
 
-    const CHAR_MS = 100;   // ms por caracter
+    const CHAR_MS = 94;   // ms por caracter
     const VID_ID = 'awuicQi36J4';
     const GOLDEN = 137.508 * Math.PI / 180;
 
@@ -406,28 +406,57 @@
 
     /* ===================== MAQUINA DE ESCRIBIR ===================== */
     function startTyping() {
-      const textEl = document.getElementById('text');
-      const cur = document.getElementById('cur');
-      const box = document.getElementById('box');
-      let i = 0;
-      function next() {
-        if (i < LETTER.length) {
-          textEl.insertBefore(document.createTextNode(LETTER[i]), cur);
-          i++;
-          box.scrollTop = box.scrollHeight;
-          if (i === 80) {
-            const h = document.getElementById('hint');
-            h.style.opacity = '1';
-            setTimeout(() => h.style.opacity = '0', 4000);
-          }
-          setTimeout(next, CHAR_MS);
-        } else {
-          cur.style.display = 'none';
-        }
-      }
-      setTimeout(next, 1600);
+  const textEl = document.getElementById('text');
+  const cur = document.getElementById('cur');
+  const box = document.getElementById('box');
+  const dateEl = document.getElementById('date');
+
+  let i = 0;
+
+  const totalDays = Math.round((END_DATE - START_DATE) / (1000 * 60 * 60 * 24));
+
+  function formatDate(d) {
+    return `${d.getDate()} de ${MONTHS_ES[d.getMonth()]}, ${d.getFullYear()}`;
+  }
+
+  function updateDate(progress) {
+    const dayOffset = Math.round(progress * totalDays);
+    const currentDate = new Date(START_DATE);
+    currentDate.setDate(START_DATE.getDate() + dayOffset);
+
+    if (currentDate > END_DATE) {
+      currentDate.setTime(END_DATE.getTime());
     }
 
+    dateEl.textContent = formatDate(currentDate);
+  }
+
+  function next() {
+    if (i < LETTER.length) {
+      textEl.insertBefore(document.createTextNode(LETTER[i]), cur);
+      i++;
+
+      const progress = i / LETTER.length;
+      updateDate(progress);
+
+      box.scrollTop = box.scrollHeight;
+
+      if (i === 80) {
+        const h = document.getElementById('hint');
+        h.style.opacity = '1';
+        setTimeout(() => h.style.opacity = '0', 4000);
+      }
+
+      setTimeout(next, CHAR_MS);
+    } else {
+      updateDate(1);
+      cur.style.display = 'none';
+    }
+  }
+
+  updateDate(0);
+  setTimeout(next, 1600);
+}
     /* ===================== MUSICA ===================== */
     function startMusic() {
       const audio = document.getElementById('music');
