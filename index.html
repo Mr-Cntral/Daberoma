@@ -548,18 +548,28 @@
             'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
         ];
 
-        /* ======= 100 IMAGENES EN BUCLE + FINAL.PNG ======= */
-        const BASE_IMAGE_COUNT = 100;
+        /* ======= 50 IMAGENES SIN REPETIR =======
+           14 imagenes duran 8 dias  = 112 dias
+           36 imagenes duran 7 dias  = 252 dias
+           total                     = 364 dias
+           dia final                 = Final.png
+        */
         const FINAL_IMAGE = 'images/Final.png';
 
-        const DAY_IMAGES = Array.from({ length: 365 }, (_, i) => {
-            if (i === 364) return FINAL_IMAGE;
+        function getImageForDay(dayOffset) {
+            if (dayOffset >= 364) return FINAL_IMAGE;
 
-            const loopIndex = (i % BASE_IMAGE_COUNT) + 1;
-            return `images/${String(loopIndex).padStart(3, '0')}.jpg`;
-        });
+            if (dayOffset < 112) {
+                const imageIndex = Math.floor(dayOffset / 8) + 1; // 001 a 014
+                return `images/${String(imageIndex).padStart(3, '0')}.jpg`;
+            } else {
+                const adjustedDay = dayOffset - 112;
+                const imageIndex = Math.floor(adjustedDay / 7) + 15; // 015 a 050
+                return `images/${String(imageIndex).padStart(3, '0')}.jpg`;
+            }
+        }
 
-        let currentBgIndex = -1;
+        let currentBgSrc = '';
         let showingA = true;
         let bgStarted = false;
 
@@ -645,15 +655,14 @@
         }
 
         /* ===================== FONDO DE IMAGENES ===================== */
-        function setBackgroundByDay(dayIndex) {
-            const safeIndex = Math.max(0, Math.min(DAY_IMAGES.length - 1, dayIndex));
-            if (safeIndex === currentBgIndex) return;
-            currentBgIndex = safeIndex;
+        function setBackgroundImage(src) {
+            if (!src || src === currentBgSrc) return;
+            currentBgSrc = src;
 
             const nextEl = showingA ? document.getElementById('bgB') : document.getElementById('bgA');
             const prevEl = showingA ? document.getElementById('bgA') : document.getElementById('bgB');
 
-            nextEl.style.backgroundImage = `url("${DAY_IMAGES[safeIndex]}")`;
+            nextEl.style.backgroundImage = `url("${src}")`;
             nextEl.classList.add('show');
             prevEl.classList.remove('show');
 
@@ -664,7 +673,7 @@
             if (bgStarted) return;
             bgStarted = true;
             document.getElementById('blueMagic').style.opacity = '.22';
-            setBackgroundByDay(0);
+            setBackgroundImage(getImageForDay(0));
         }
 
         /* ===================== FECHA DINAMICA ===================== */
@@ -706,8 +715,8 @@
             dateEl.textContent = formatDate(currentDate, isFinal);
             applyDateStyle(progress);
 
-            const imageIndex = Math.min(DAY_IMAGES.length - 1, dayOffset);
-            setBackgroundByDay(imageIndex);
+            const bgSrc = getImageForDay(dayOffset);
+            setBackgroundImage(bgSrc);
         }
 
         /* ===================== FINAL ===================== */
@@ -719,7 +728,7 @@
 
             setTimeout(() => {
                 finalDate.textContent = dateEl.textContent;
-                setBackgroundByDay(364); // fuerza Final.png
+                setBackgroundImage(FINAL_IMAGE);
                 document.body.classList.add('final-mode');
             }, 3000);
         }
