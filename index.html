@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <title>Para mi Dani</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;1,300;1,400&family=Raleway:wght@200;300;500;700&display=swap"
+        rel="stylesheet" />
+    <style>
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #07091a;
+        }
+
+        body.final-mode #box {
+            opacity: 0;
+            transform: scale(.96);
+            pointer-events: none;
+        }
+
+        body.final-mode #finalCenter {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* ======= FONDO INICIAL AZUL ======= */
+        #blueMagic {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 20% 20%, rgba(43, 83, 255, .22), transparent 28%),
+                radial-gradient(circle at 78% 26%, rgba(83, 126, 255, .18), transparent 30%),
+                radial-gradient(circle at 30% 80%, rgba(115, 77, 255, .16), transparent 28%),
+                radial-gradient(circle at 80% 75%, rgba(43, 83, 255, .20), transparent 26%),
+                radial-gradient(ellipse at center, #0f1f6b 0%, #09113d 45%, #05081c 100%);
+            opacity: 1;
+            transition: opacity 2s ease;
+            pointer-events: none;
+        }
+
+        /* ======= CAPAS DE IMAGEN DE FONDO ======= */
+        #bgStage {
+            position: fixed;
+            inset: 0;
+            z-index: 1;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bgSlide {
+            position: absolute;
+            inset: 0;
+            background-position: center;
+            background-size: cover;
+            background-repeat: no-repeat;
+            opacity: 0;
+            transform: scale(1.06);
+            transition:
+                opacity 1.8s ease,
+                transform 7s ease;
+            filter: saturate(1.02) brightness(.68);
+        }
+
+        .bgSlide.show {
+            opacity: .42;
+            transform: scale(1);
+        }
+
+        .bgOverlay {
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(circle at center, rgba(7, 9, 26, .12) 0%, rgba(7, 9, 26, .42) 55%, rgba(7, 9, 26, .72) 100%);
+        }
+
+        /* ======= ESTRELLAS ======= */
+        #stars {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .star {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            animation: twinkle ease-in-out infinite alternate;
+        }
+
+        @keyframes twinkle {
+            from {
+                opacity: .08;
+            }
+
+            to {
+                opacity: .85;
+            }
+        }
+
+        /* ======= INTRO ======= */
+        #intro {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(ellipse at 50% 55%, rgba(21, 26, 68, .80) 0%, rgba(7, 9, 26, .82) 75%);
+            transition: opacity 1.4s ease, visibility 1.4s ease;
+        }
+
+        #intro.out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        #intro-title {
+            font-family: 'Cormorant Garamond', serif;
+            font-weight: 300;
+            font-size: clamp(1.8rem, 7vw, 3rem);
+            color: #e8c96a;
+            letter-spacing: .14em;
+            margin-bottom: .3em;
+            text-align: center;
+        }
+
+        #intro-sub {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 200;
+            font-size: clamp(.7rem, 3vw, .9rem);
+            color: rgba(255, 255, 255, .35);
+            letter-spacing: .3em;
+            text-transform: uppercase;
+            margin-bottom: 3.5rem;
+        }
+
+        #btn {
+            position: relative;
+            overflow: hidden;
+            background: transparent;
+            border: 1px solid rgba(232, 201, 106, .55);
+            color: #e8c96a;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 300;
+            font-size: clamp(.8rem, 3.5vw, 1rem);
+            letter-spacing: .4em;
+            text-transform: uppercase;
+            padding: 1.1em 3.2em;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: color .45s, border-color .45s;
+        }
+
+        #btn::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: #e8c96a;
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform .45s ease;
+            z-index: -1;
+        }
+
+        #btn:hover {
+            color: #07091a;
+            border-color: #e8c96a;
+        }
+
+        #btn:hover::after {
+            transform: scaleX(1);
+        }
+
+        /* ======= ESCENA ======= */
+        #scene {
+            position: fixed;
+            inset: 0;
+            z-index: 10;
+            display: none;
+            background: transparent;
+        }
+
+        /* ======= GIRASOLES ======= */
+        #flowers {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 11;
+        }
+
+        .sf {
+            position: absolute;
+            bottom: -180px;
+            will-change: transform, opacity;
+            animation: sway linear infinite;
+            opacity: 0;
+        }
+
+        @keyframes sway {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 0;
+            }
+
+            6% {
+                opacity: .88;
+            }
+
+            20% {
+                transform: translateY(-20vh) translateX(18px) rotate(6deg);
+            }
+
+            35% {
+                transform: translateY(-35vh) translateX(-14px) rotate(-4deg);
+            }
+
+            50% {
+                transform: translateY(-50vh) translateX(22px) rotate(7deg);
+            }
+
+            65% {
+                transform: translateY(-65vh) translateX(-18px) rotate(-5deg);
+            }
+
+            80% {
+                transform: translateY(-80vh) translateX(12px) rotate(4deg);
+            }
+
+            92% {
+                opacity: .7;
+            }
+
+            100% {
+                transform: translateY(-112vh) translateX(var(--dx)) rotate(var(--dr));
+                opacity: 0;
+            }
+        }
+
+        /* ======= CARTA ======= */
+        #wrap {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.8rem 1rem 3rem;
+            z-index: 15;
+        }
+
+        #box {
+            width: 100%;
+            max-width: 620px;
+            height: min(72vh, 560px);
+            overflow: hidden;
+            padding: 2rem 1.6rem 1.6rem;
+            background: rgba(7, 9, 26, .52);
+            border: 1px solid rgba(232, 201, 106, .16);
+            border-radius: 4px;
+            backdrop-filter: blur(8px);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: opacity 1.2s ease, transform 1.2s ease;
+            box-shadow: 0 0 28px rgba(0, 0, 0, .18);
+        }
+
+        #date {
+            font-family: 'Raleway', sans-serif;
+            font-weight: 200;
+            font-size: clamp(.6rem, 2.5vw, .78rem);
+            color: rgba(232, 201, 106, .45);
+            letter-spacing: .3em;
+            text-transform: uppercase;
+            margin-bottom: 1.4rem;
+            flex: 0 0 auto;
+            position: relative;
+            z-index: 3;
+            transition:
+                color .8s ease,
+                letter-spacing .8s ease,
+                transform 1.2s ease,
+                text-shadow .8s ease,
+                opacity .8s ease,
+                font-weight .8s ease,
+                font-size 1.2s ease;
+            transform-origin: center center;
+            text-align: center;
+        }
+
+        #date.grow-final {
+            transform: scale(2.2);
+            text-shadow:
+                0 0 12px rgba(126, 200, 255, .45),
+                0 0 26px rgba(126, 200, 255, .28);
+        }
+
+        #date.date-phase-1 {
+            color: rgba(232, 201, 106, .45);
+            letter-spacing: .3em;
+            font-weight: 200;
+        }
+
+        #date.date-phase-2 {
+            color: #f1d98a;
+            letter-spacing: .34em;
+            text-shadow: 0 0 10px rgba(232, 201, 106, .14);
+            font-weight: 300;
+        }
+
+        #date.date-phase-3 {
+            color: #f4c7d9;
+            letter-spacing: .38em;
+            text-shadow: 0 0 12px rgba(244, 199, 217, .18);
+            font-weight: 300;
+        }
+
+        #date.date-phase-4 {
+            color: #c8d6ff;
+            letter-spacing: .42em;
+            text-shadow: 0 0 14px rgba(200, 214, 255, .22);
+            font-weight: 500;
+        }
+
+        #date.date-final {
+            color: #7ec8ff;
+            letter-spacing: .30em;
+            text-shadow:
+                0 0 8px rgba(126, 200, 255, .35),
+                0 0 18px rgba(126, 200, 255, .22);
+            font-weight: 700;
+        }
+
+        #textViewport {
+            position: relative;
+            flex: 1 1 auto;
+            overflow: hidden;
+            min-height: 0;
+        }
+
+        #textViewport::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 72px;
+            z-index: 2;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity .8s ease;
+            background: linear-gradient(to bottom,
+                    rgba(7, 9, 26, .85) 0%,
+                    rgba(7, 9, 26, .45) 45%,
+                    rgba(7, 9, 26, 0) 100%);
+        }
+
+        #textViewport.fade-top::before {
+            opacity: 1;
+        }
+
+        #textScroller {
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: none;
+            padding-right: .2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        #textScroller::-webkit-scrollbar {
+            display: none;
+        }
+
+        #text {
+            font-family: 'Cormorant Garamond', serif;
+            font-style: italic;
+            font-weight: 300;
+            font-size: clamp(1.05rem, 4vw, 1.3rem);
+            line-height: 1.95;
+            color: #f5e9c8;
+            min-height: 100%;
+            padding-top: .4rem;
+        }
+
+        #cur {
+            display: inline-block;
+            width: 2px;
+            height: 1em;
+            background: #e8c96a;
+            vertical-align: middle;
+            margin-left: 3px;
+            animation: blink .85s step-end infinite;
+        }
+
+        @keyframes blink {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        #hint {
+            position: fixed;
+            bottom: 1rem;
+            left: 50%;
+            transform: translateX(-50%);
+            font-family: 'Raleway', sans-serif;
+            font-weight: 200;
+            font-size: .62rem;
+            letter-spacing: .28em;
+            color: rgba(232, 201, 106, .28);
+            text-transform: uppercase;
+            opacity: 0;
+            transition: opacity 1s;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        /* ======= FINAL ======= */
+        #finalCenter {
+            position: fixed;
+            inset: 0;
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            opacity: 0;
+            transform: scale(.92);
+            transition: opacity 1.3s ease, transform 1.3s ease;
+            pointer-events: none;
+            padding: 2rem;
+        }
+
+        #finalDate {
+            font-family: 'Raleway', sans-serif;
+            color: #7ec8ff;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: .18em;
+            font-size: clamp(1.25rem, 5vw, 3rem);
+            line-height: 1.35;
+            text-shadow:
+                0 0 12px rgba(126, 200, 255, .45),
+                0 0 28px rgba(126, 200, 255, .25);
+            margin: 0 0 .9rem 0;
+            max-width: 90vw;
+        }
+
+        #finalLove {
+            font-family: 'Cormorant Garamond', serif;
+            color: #f5e9c8;
+            font-style: italic;
+            font-size: clamp(2rem, 7vw, 4.8rem);
+            line-height: 1.15;
+            letter-spacing: .06em;
+            opacity: 0;
+            transform: translateY(18px);
+            transition: opacity 1.2s ease .45s, transform 1.2s ease .45s;
+            text-shadow: 0 0 14px rgba(126, 200, 255, .12);
+        }
+
+        body.final-mode #finalLove {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="blueMagic"></div>
+
+    <div id="bgStage">
+        <div id="bgA" class="bgSlide"></div>
+        <div id="bgB" class="bgSlide"></div>
+        <div class="bgOverlay"></div>
+    </div>
+
+    <div id="stars"></div>
+
+    <div id="intro">
+        <p id="intro-title">Para mi Dani</p>
+        <p id="intro-sub">Hoy es nuestro dia</p>
+        <button id="btn" onclick="startExperience()">Abrir</button>
+    </div>
+
+    <div id="scene">
+        <div id="flowers"></div>
+
+        <div id="wrap">
+            <div id="box">
+                <div id="date" class="date-phase-1">23 de Abril, 2025</div>
+
+                <div id="textViewport">
+                    <div id="textScroller">
+                        <div id="text"><span id="cur"></span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="hint">Desliza para leer</div>
+    </div>
+
+    <div id="finalCenter">
+        <div id="finalDate"></div>
+        <div id="finalLove">TE AMO MI DANI 💙</div>
+    </div>
+
+    <audio id="music" src="musica.webm" preload="auto"></audio>
+
+    <script>
+        /* ===================== CONFIGURACION ===================== */
+        const LETTER = `Altos y bajos marcan los días, la temperatura sube y cae con prisa, y aun así este tiempo hermoso parece infinito, las palabras no alcanzan a contener lo que siento, pero las tuyas siempre llegan con una claridad dulce y necesaria, no sé en qué momento llegamos aquí ni hacia dónde nos llevará el futuro, solo sé que mis ojos fueron afortunados al encontrarte y que esta historia merece ser vivida sin miedo, incluso cuando dudo de mí, incluso cuando me pierdo, tu paciencia se vuelve refugio y dirección, intento mejorar, avanzar, sostener este ritmo que juntos creamos, mis recuerdos se agitan como una melodía que encuentra en ti su armonía perfecta, tú traes luz, traes calma, traes ese calor que mi piel reconoce y extraña cuando no estás, y en medio de todo comprendo que esto no es casualidad ni ilusión, es una fuerza real que nos empuja a elegirnos cada día, a construir con intención y ternura, a imaginar un mañana donde cada decisión nos acerque más, donde una casa se llene de risas pequeñas y silencios compartidos, porque amarte no es solo sentir, es entender que en ti encontré hogar, paz, destino y una razón profunda para creer que lo más bonito de mi vida no es un recuerdo sino todo lo que aún nos queda por vivir juntos mi Dani, como si nuestras historias hubieran estado esperando este instante para finalmente encontrarse y comenzar a escribirse juntas TE AMO DANIELA BEATRIZ ROSALES MAFALADO 💙`;
+
+        const CHAR_MS = 97;
+        const GOLDEN = 137.508 * Math.PI / 180;
+
+        const START_DATE = new Date(2025, 3, 23);
+        const END_DATE = new Date(2026, 3, 23);
+        const MONTHS_ES = [
+            'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+            'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+        ];
+
+        /* ======= 100 IMAGENES EN BUCLE + FINAL.PNG ======= */
+        const BASE_IMAGE_COUNT = 100;
+        const FINAL_IMAGE = 'images/Final.png';
+
+        const DAY_IMAGES = Array.from({ length: 365 }, (_, i) => {
+            if (i === 364) return FINAL_IMAGE;
+
+            const loopIndex = (i % BASE_IMAGE_COUNT) + 1;
+            return `images/${String(loopIndex).padStart(3, '0')}.jpg`;
+        });
+
+        let currentBgIndex = -1;
+        let showingA = true;
+        let bgStarted = false;
+
+        /* ===================== ESTRELLAS ===================== */
+        (function () {
+            const c = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const d = document.createElement('div');
+                d.className = 'star';
+                const s = Math.random() * 2.2 + .3;
+                d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-duration:${2 + Math.random() * 3.5}s;animation-delay:${Math.random() * 5}s`;
+                c.appendChild(d);
+            }
+        })();
+
+        /* ===================== SVG GIRASOL ===================== */
+        function sunflowerSVG(type) {
+            const blue = type === 'blue';
+            const P1 = blue ? '#3949ab' : '#fdd835';
+            const P2 = blue ? '#1a237e' : '#f9a825';
+            const C1 = blue ? '#0d1b6e' : '#3e2723';
+            const C2 = blue ? '#060d3a' : '#1b0000';
+            const DOT = blue ? 'rgba(160,185,255,.18)' : 'rgba(255,240,120,.15)';
+
+            const PETALS = 14;
+            let outer = '', inner = '', seeds = '';
+
+            for (let i = 0; i < PETALS; i++) {
+                const a = (360 / PETALS) * i;
+                outer += `<ellipse rx="7.5" ry="25" fill="${P1}" stroke="${P2}" stroke-width=".6" opacity=".95"
+          transform="rotate(${a}) translate(0,-36)"/>`;
+            }
+
+            for (let i = 0; i < PETALS; i++) {
+                const a = (360 / PETALS) * i + (360 / PETALS / 2);
+                inner += `<ellipse rx="5" ry="17" fill="${P2}" stroke="${P2}" stroke-width=".3" opacity=".7"
+          transform="rotate(${a}) translate(0,-28)"/>`;
+            }
+
+            for (let i = 0; i < 55; i++) {
+                const r = Math.sqrt(i) * 2.4;
+                const ang = i * GOLDEN;
+                const x = (r * Math.cos(ang)).toFixed(1);
+                const y = (r * Math.sin(ang)).toFixed(1);
+                if (r < 19) seeds += `<circle cx="${x}" cy="${y}" r="1.1" fill="${DOT}"/>`;
+            }
+
+            const shine = `<ellipse cx="-7" cy="-9" rx="5" ry="3.5" fill="${blue ? 'rgba(150,170,255,.22)' : 'rgba(255,255,180,.25)'}" transform="rotate(-35)"/>`;
+
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="-68 -68 136 136" style="width:100%;height:100%">
+        <g>${inner}</g>
+        <g>${outer}</g>
+        <circle r="22" fill="${C1}"/>
+        <circle r="17" fill="${C2}"/>
+        <g>${seeds}</g>
+        ${shine}
+      </svg>`;
+        }
+
+        /* ===================== FLOTAR GIRASOLES ===================== */
+        function spawnFlower() {
+            const layer = document.getElementById('flowers');
+            const types = ['yellow', 'blue', 'yellow', 'blue', 'yellow', 'yellow', 'blue'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            const size = 90 + Math.random() * 70;
+            const el = document.createElement('div');
+            el.className = 'sf';
+            const dx = (Math.random() * 100 - 50).toFixed(0) + 'px';
+            const dr = (Math.random() * 60 - 30).toFixed(0) + 'deg';
+            const dur = (14 + Math.random() * 9).toFixed(1) + 's';
+            const delay = (Math.random() * 2).toFixed(2) + 's';
+            const left = (Math.random() * 92).toFixed(1) + '%';
+            el.style.cssText = `left:${left};width:${size}px;height:${size}px;--dx:${dx};--dr:${dr};animation-duration:${dur};animation-delay:${delay}`;
+            el.innerHTML = sunflowerSVG(type);
+            layer.appendChild(el);
+            const total = (parseFloat(dur) + parseFloat(delay)) * 1000 + 600;
+            setTimeout(() => el.remove(), total);
+        }
+
+        function startFlowers() {
+            for (let i = 0; i < 8; i++) setTimeout(spawnFlower, i * 180);
+            setInterval(spawnFlower, 800);
+        }
+
+        /* ===================== FONDO DE IMAGENES ===================== */
+        function setBackgroundByDay(dayIndex) {
+            const safeIndex = Math.max(0, Math.min(DAY_IMAGES.length - 1, dayIndex));
+            if (safeIndex === currentBgIndex) return;
+            currentBgIndex = safeIndex;
+
+            const nextEl = showingA ? document.getElementById('bgB') : document.getElementById('bgA');
+            const prevEl = showingA ? document.getElementById('bgA') : document.getElementById('bgB');
+
+            nextEl.style.backgroundImage = `url("${DAY_IMAGES[safeIndex]}")`;
+            nextEl.classList.add('show');
+            prevEl.classList.remove('show');
+
+            showingA = !showingA;
+        }
+
+        function startBackgroundSequence() {
+            if (bgStarted) return;
+            bgStarted = true;
+            document.getElementById('blueMagic').style.opacity = '.22';
+            setBackgroundByDay(0);
+        }
+
+        /* ===================== FECHA DINAMICA ===================== */
+        function formatDate(d, isFinal = false) {
+            const base = `${d.getDate()} de ${MONTHS_ES[d.getMonth()]}, ${d.getFullYear()}`;
+            return isFinal ? `${base.toUpperCase()} 💙` : base;
+        }
+
+        function applyDateStyle(progress) {
+            const dateEl = document.getElementById('date');
+            dateEl.classList.remove('date-phase-1', 'date-phase-2', 'date-phase-3', 'date-phase-4', 'date-final');
+
+            if (progress >= 1) {
+                dateEl.classList.add('date-final');
+            } else if (progress >= 0.75) {
+                dateEl.classList.add('date-phase-4');
+            } else if (progress >= 0.5) {
+                dateEl.classList.add('date-phase-3');
+            } else if (progress >= 0.25) {
+                dateEl.classList.add('date-phase-2');
+            } else {
+                dateEl.classList.add('date-phase-1');
+            }
+        }
+
+        function updateDynamicDate(progress) {
+            const dateEl = document.getElementById('date');
+            const totalDays = Math.round((END_DATE - START_DATE) / (1000 * 60 * 60 * 24));
+            const dayOffset = Math.round(progress * totalDays);
+
+            const currentDate = new Date(START_DATE);
+            currentDate.setDate(START_DATE.getDate() + dayOffset);
+
+            if (currentDate > END_DATE) {
+                currentDate.setTime(END_DATE.getTime());
+            }
+
+            const isFinal = progress >= 1;
+            dateEl.textContent = formatDate(currentDate, isFinal);
+            applyDateStyle(progress);
+
+            const imageIndex = Math.min(DAY_IMAGES.length - 1, dayOffset);
+            setBackgroundByDay(imageIndex);
+        }
+
+        /* ===================== FINAL ===================== */
+        function triggerFinalScene() {
+            const dateEl = document.getElementById('date');
+            const finalDate = document.getElementById('finalDate');
+
+            dateEl.classList.add('grow-final');
+
+            setTimeout(() => {
+                finalDate.textContent = dateEl.textContent;
+                setBackgroundByDay(364); // fuerza Final.png
+                document.body.classList.add('final-mode');
+            }, 3000);
+        }
+
+        /* ===================== MAQUINA DE ESCRIBIR ===================== */
+        function startTyping() {
+            const textEl = document.getElementById('text');
+            const cur = document.getElementById('cur');
+            const textScroller = document.getElementById('textScroller');
+            const textViewport = document.getElementById('textViewport');
+            let i = 0;
+
+            updateDynamicDate(0);
+
+            function updateFade() {
+                const overflowAmount = textScroller.scrollHeight - textScroller.clientHeight;
+                const scrolled = textScroller.scrollTop;
+
+                if (overflowAmount > 40 && scrolled > 12) {
+                    textViewport.classList.add('fade-top');
+                } else {
+                    textViewport.classList.remove('fade-top');
+                }
+            }
+
+            function next() {
+                if (i < LETTER.length) {
+                    textEl.insertBefore(document.createTextNode(LETTER[i]), cur);
+                    i++;
+
+                    const progress = i / LETTER.length;
+                    updateDynamicDate(progress);
+
+                    textScroller.scrollTop = textScroller.scrollHeight;
+                    updateFade();
+
+                    if (i === 20) {
+                        startBackgroundSequence();
+                    }
+
+                    if (i === 80) {
+                        const h = document.getElementById('hint');
+                        h.style.opacity = '1';
+                        setTimeout(() => h.style.opacity = '0', 4000);
+                    }
+
+                    setTimeout(next, CHAR_MS);
+                } else {
+                    updateDynamicDate(1);
+                    updateFade();
+                    cur.style.display = 'none';
+                    triggerFinalScene();
+                }
+            }
+
+            textScroller.addEventListener('scroll', updateFade);
+            setTimeout(next, 1600);
+        }
+
+        /* ===================== MUSICA ===================== */
+        function startMusic() {
+            const audio = document.getElementById('music');
+            audio.volume = 0.8;
+            audio.play().catch(() => { });
+        }
+
+        /* ===================== INICIO ===================== */
+        function startExperience() {
+            document.getElementById('intro').classList.add('out');
+            document.getElementById('scene').style.display = 'block';
+            startMusic();
+            startFlowers();
+            startTyping();
+        }
+    </script>
+</body>
+
+</html>
